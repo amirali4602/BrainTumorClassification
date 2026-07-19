@@ -23,7 +23,7 @@ CLASS_NAMES = [
     "pituitary",
 ]
 
-MODEL_NAME = "custom_cnn"
+MODEL_NAME = "efficientnetb0"
 
 NUM_CLASSES = len(CLASS_NAMES)
 
