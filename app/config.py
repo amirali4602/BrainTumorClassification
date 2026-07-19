@@ -25,11 +25,31 @@ CLASS_NAMES = [
 
 NUM_CLASSES = len(CLASS_NAMES)
 
-IMAGE_SIZE = (224, 224)
+# ===============================
+# Image
+# ===============================
+
+IMAGE_HEIGHT = 224
+IMAGE_WIDTH = 224
+IMAGE_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
 
 CHANNELS = 3
 
+# ===============================
+# Dataset
+# ===============================
+
 BATCH_SIZE = 32
+
+VALIDATION_SPLIT = 0.2
+
+SHUFFLE_BUFFER = 1000
+
+AUTOTUNE = -1
+
+# ===============================
+# Training
+# ===============================
 
 EPOCHS = 20
 

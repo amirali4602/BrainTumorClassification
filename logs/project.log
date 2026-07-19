@@ -43,3 +43,18 @@
 [2026-07-19 15:31:01] INFO - Minimum Size : (201, 202)
 [2026-07-19 15:31:01] INFO - Maximum Size : (1365, 1365)
 [2026-07-19 15:31:03] INFO - Sprint 1 completed successfully.
+[2026-07-19 16:12:15] INFO - Training batches : 10
+[2026-07-19 16:12:15] INFO - Validation batches : 3
+[2026-07-19 16:12:15] INFO - Testing batches : 3
+[2026-07-19 16:12:17] INFO - Image batch shape : (32, 224, 224, 3)
+[2026-07-19 16:12:17] INFO - Label batch shape : (32,)
+[2026-07-19 17:13:49] INFO - Training batches : 10
+[2026-07-19 17:13:49] INFO - Validation batches : 3
+[2026-07-19 17:13:49] INFO - Testing batches : 3
+[2026-07-19 17:13:50] INFO - Image batch shape : (32, 224, 224, 3)
+[2026-07-19 17:13:50] INFO - Label batch shape : (32,)
+[2026-07-19 17:18:14] INFO - Training batches : 10
+[2026-07-19 17:18:14] INFO - Validation batches : 3
+[2026-07-19 17:18:14] INFO - Testing batches : 3
+[2026-07-19 17:18:15] INFO - Image batch shape : (32, 224, 224, 3)
+[2026-07-19 17:18:15] INFO - Label batch shape : (32,)
