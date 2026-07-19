@@ -5,16 +5,14 @@ from app.config import (
     NUM_CLASSES,
 )
 from pathlib import Path
-
-from app.config import RESULTS_DIR
 from app.models.custom_cnn import CustomCNNModel
-
+from app.evaluation.evaluator import Evaluator
 from app.preprocessing.loaders import DatasetLoader
 from app.preprocessing.pipelines import (
     prepare_train,
     prepare_validation,
+    prepare_test,
 )
-
 from app.training.trainer import Trainer
 from app.config import RESULTS_DIR
 from app.training.history import HistoryManager
@@ -24,11 +22,11 @@ def main():
 
     loader = DatasetLoader()
 
-    train_ds, val_ds, _ = loader.load()
-
+    train_ds, val_ds, test_ds  = loader.load()
+    class_names = train_ds.class_names
     train_ds = prepare_train(train_ds)
-
     val_ds = prepare_validation(val_ds)
+    test_ds = prepare_test(test_ds)
 
     model = CustomCNNModel()
 
@@ -73,6 +71,15 @@ def main():
 
     save_training_report(
         history,
+        output,
+    )
+
+    output = RESULTS_DIR / "custom_cnn"
+
+    Evaluator().evaluate(
+        model,
+        test_ds,
+        class_names,
         output,
     )
 
