@@ -58,3 +58,9 @@ EPOCHS = 20
 LEARNING_RATE = 1e-4
 
 RANDOM_SEED = 42
+
+# ===============================
+# Models
+# ===============================
+MODELS_DIR = ROOT_DIR / "saved_models"
+MODELS_DIR.mkdir(parents=True, exist_ok=True)
