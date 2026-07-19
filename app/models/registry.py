@@ -1,5 +1,6 @@
 from app.models.custom_cnn import CustomCNNModel
 from app.models.resnet50 import ResNet50Model
+from app.models.efficientnetb0 import EfficientNetB0Model
 
 
 MODEL_REGISTRY = {
@@ -7,6 +8,8 @@ MODEL_REGISTRY = {
     "custom_cnn": CustomCNNModel,
 
     "resnet50": ResNet50Model,
+
+    "efficientnetb0": EfficientNetB0Model,
 
 }
 

@@ -1,9 +1,12 @@
 import numpy as np
 
+from sklearn.metrics import confusion_matrix
+
 from app.evaluation.metrics import calculate_metrics
 from app.evaluation.confusion import save_confusion_matrix
 from app.evaluation.reports import save_report
 from app.evaluation.predictions import save_predictions
+
 
 class Evaluator:
 
@@ -25,6 +28,7 @@ class Evaluator:
             axis=1,
         )
 
+
         y_true = np.concatenate(
             [
                 labels.numpy()
@@ -32,16 +36,33 @@ class Evaluator:
             ]
         )
 
+
         metrics = calculate_metrics(
             y_true,
             y_pred,
         )
+
+
+        # Save confusion matrix values
+        cm = confusion_matrix(
+            y_true,
+            y_pred,
+        )
+
+        np.save(
+            output / "confusion_matrix.npy",
+            cm,
+        )
+
+
         save_confusion_matrix(
             y_true,
             y_pred,
             class_names,
             output,
         )
+
+
         save_predictions(
             y_true,
             y_pred,
@@ -49,9 +70,11 @@ class Evaluator:
             output,
         )
 
+
         save_report(
             metrics,
             output,
         )
+
 
         return metrics
