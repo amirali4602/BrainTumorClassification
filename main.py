@@ -1,8 +1,4 @@
-def main():
-    print("=" * 40)
-    print("Brain Tumor MRI Classification")
-    print("=" * 40)
-
+from app.gui.app import run
 
 if __name__ == "__main__":
-    main()
+    run()
