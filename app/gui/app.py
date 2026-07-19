@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 
 from app.gui.styles.stylesheet import APP_STYLESHEET
 from app.gui.widgets.image_view import ImageView
-
+from app.gui.widgets.prediction_panel import PredictionPanel
 
 class MainWindow(QMainWindow):
 
@@ -30,9 +30,17 @@ class MainWindow(QMainWindow):
 
         self.image_view = ImageView()
 
+        self.image_view = ImageView()
+        self.prediction_panel = PredictionPanel()
+
         layout.addWidget(
             self.image_view,
-            stretch=2,
+            3,
+        )
+
+        layout.addWidget(
+            self.prediction_panel,
+            1,
         )
         
 
