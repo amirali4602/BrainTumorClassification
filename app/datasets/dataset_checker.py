@@ -1,11 +1,18 @@
 from pathlib import Path
 
-from app.config import TRAIN_DIR
-from app.config import TEST_DIR
-from app.config import CLASS_NAMES
+from app.config import (
+    TRAIN_DIR,
+    TEST_DIR,
+    CLASS_NAMES,
+)
+
+from app.utils.logger import get_logger
+
+logger = get_logger(__name__)
 
 
 def count_images(folder: Path) -> int:
+
     count = 0
 
     for ext in ("*.jpg", "*.jpeg", "*.png"):
@@ -16,15 +23,9 @@ def count_images(folder: Path) -> int:
 
 def verify_dataset():
 
-    print("=" * 50)
-    print("Dataset Verification")
-    print("=" * 50)
-
-    if not TRAIN_DIR.exists():
-        raise FileNotFoundError(TRAIN_DIR)
-
-    if not TEST_DIR.exists():
-        raise FileNotFoundError(TEST_DIR)
+    logger.info("=" * 60)
+    logger.info("Dataset Verification")
+    logger.info("=" * 60)
 
     train_total = 0
     test_total = 0
@@ -40,16 +41,14 @@ def verify_dataset():
         train_total += train_count
         test_total += test_count
 
-        print(f"{cls:<15} Train: {train_count:<5} Test: {test_count}")
+        logger.info(
+            f"{cls:<15} Train: {train_count:<5} Test: {test_count}"
+        )
 
-    print("-" * 50)
+    logger.info("-" * 60)
 
-    print(f"Training Images : {train_total}")
+    logger.info(f"Training Images : {train_total}")
 
-    print(f"Testing Images  : {test_total}")
+    logger.info(f"Testing Images  : {test_total}")
 
-    print("=" * 50)
-
-
-if __name__ == "__main__":
-    verify_dataset()
+    logger.info("=" * 60)
