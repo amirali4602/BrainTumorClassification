@@ -23,6 +23,8 @@ CLASS_NAMES = [
     "pituitary",
 ]
 
+MODEL_NAME = "custom_cnn"
+
 NUM_CLASSES = len(CLASS_NAMES)
 
 # ===============================

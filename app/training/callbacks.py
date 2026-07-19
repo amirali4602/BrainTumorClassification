@@ -3,12 +3,12 @@ import tensorflow as tf
 from app.config import SAVED_MODELS_DIR
 
 
-def get_callbacks():
+def get_callbacks(model_name):
 
     checkpoint = tf.keras.callbacks.ModelCheckpoint(
-        filepath=SAVED_MODELS_DIR / "custom_cnn.keras",
+        SAVED_MODELS_DIR / f"{model_name}.keras",
+        monitor="val_loss",
         save_best_only=True,
-        monitor="val_accuracy",
     )
 
     early_stop = tf.keras.callbacks.EarlyStopping(
