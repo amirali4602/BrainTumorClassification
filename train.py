@@ -1,42 +1,80 @@
+from app.config import (
+    IMAGE_HEIGHT,
+    IMAGE_WIDTH,
+    CHANNELS,
+    NUM_CLASSES,
+)
+from pathlib import Path
+
+from app.config import RESULTS_DIR
+from app.models.custom_cnn import CustomCNNModel
+
 from app.preprocessing.loaders import DatasetLoader
 from app.preprocessing.pipelines import (
     prepare_train,
-    prepare_test,
+    prepare_validation,
 )
-from app.preprocessing.pipeline_report import save_pipeline_report
-from app.visualization.augmentation_preview import save_augmentation_preview
-from app.utils.logger import get_logger
 
-logger = get_logger(__name__)
-
+from app.training.trainer import Trainer
+from app.config import RESULTS_DIR
+from app.training.history import HistoryManager
+from app.training.reports import save_training_report
 
 def main():
 
     loader = DatasetLoader()
 
-    train_ds, val_ds, test_ds = loader.load()
+    train_ds, val_ds, _ = loader.load()
 
     train_ds = prepare_train(train_ds)
 
-    val_ds = prepare_test(val_ds)
+    val_ds = prepare_validation(val_ds)
 
-    test_ds = prepare_test(test_ds)
-    save_augmentation_preview(train_ds)
+    model = CustomCNNModel()
 
-    save_pipeline_report()
+    model.build(
+        (
+            IMAGE_HEIGHT,
+            IMAGE_WIDTH,
+            CHANNELS,
+        ),
+        NUM_CLASSES,
+    )
 
-    logger.info("Training batches : %d", len(train_ds))
+    model.compile()
 
-    logger.info("Validation batches : %d", len(val_ds))
+    model.summary()
+    summary_path = RESULTS_DIR / "custom_cnn"
 
-    logger.info("Testing batches : %d", len(test_ds))
+    summary_path.mkdir(parents=True, exist_ok=True)
 
-    images, labels = next(iter(train_ds))
+    with open(
+        summary_path / "model_summary.txt",
+        "w",
+        encoding="utf-8",
+    ) as f:
+        f.write(f"Model Name: {model.model.name}\n")
+        f.write("=" * 60 + "\n\n")
 
-    logger.info("Image batch shape : %s", images.shape)
+        model.model.summary(print_fn=lambda line: f.write(line + "\n"))
+    trainer = Trainer()
 
-    logger.info("Label batch shape : %s", labels.shape)
+    history = trainer.train(
+        model,
+        train_ds,
+        val_ds,
+    )
+    output = RESULTS_DIR / "custom_cnn"
 
+    HistoryManager(
+        history,
+        output,
+    ).save_all()
+
+    save_training_report(
+        history,
+        output,
+    )
 
 if __name__ == "__main__":
     main()
