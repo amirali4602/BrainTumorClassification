@@ -1,59 +1,41 @@
-from app.config import TRAIN_DIR
-from app.datasets.dataset_analyzer import DatasetAnalyzer
-from app.datasets.dataset_checker import verify_dataset
-from app.datasets.report_generator import DatasetReport
-from app.utils.directories import create_directories
-from app.utils.logger import get_logger
-from app.visualization.plots import (
-    plot_class_distribution,
-    plot_image_sizes,
-    plot_samples,
+from app.preprocessing.loaders import DatasetLoader
+from app.preprocessing.pipelines import (
+    prepare_train,
+    prepare_test,
 )
+from app.preprocessing.pipeline_report import save_pipeline_report
+from app.visualization.augmentation_preview import save_augmentation_preview
+from app.utils.logger import get_logger
 
 logger = get_logger(__name__)
 
 
 def main():
 
-    logger.info("Brain Tumor MRI Classification")
+    loader = DatasetLoader()
 
-    create_directories()
+    train_ds, val_ds, test_ds = loader.load()
 
-    verify_dataset()
+    train_ds = prepare_train(train_ds)
 
-    analyzer = DatasetAnalyzer(TRAIN_DIR)
+    val_ds = prepare_test(val_ds)
 
-    distribution = analyzer.class_distribution()
+    test_ds = prepare_test(test_ds)
+    save_augmentation_preview(train_ds)
 
-    sizes = analyzer.image_sizes()
+    save_pipeline_report()
 
-    avg = analyzer.average_size()
+    logger.info("Training batches : %d", len(train_ds))
 
-    minimum = analyzer.min_size()
+    logger.info("Validation batches : %d", len(val_ds))
 
-    maximum = analyzer.max_size()
+    logger.info("Testing batches : %d", len(test_ds))
 
-    logger.info("Dataset Summary")
-    logger.info("Average Size : %.2f x %.2f", *avg)
-    logger.info("Minimum Size : %s", minimum)
-    logger.info("Maximum Size : %s", maximum)
+    images, labels = next(iter(train_ds))
 
-    plot_class_distribution(distribution)
-    plot_image_sizes(sizes)
-    plot_samples(analyzer.images, analyzer.labels)
+    logger.info("Image batch shape : %s", images.shape)
 
-    report = DatasetReport()
-
-    report.save_csv(distribution)
-
-    report.save_markdown(
-        distribution,
-        avg,
-        minimum,
-        maximum,
-    )
-
-    logger.info("Sprint 1 completed successfully.")
+    logger.info("Label batch shape : %s", labels.shape)
 
 
 if __name__ == "__main__":
