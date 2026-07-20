@@ -43,7 +43,7 @@ class MainWindow(QMainWindow):
         dock.setWidget(self.log_console)
 
         self.addDockWidget(
-            Qt.BottomDockWidgetArea,
+            Qt.RightDockWidgetArea,
             dock,
         )
 
@@ -269,9 +269,8 @@ class MainWindow(QMainWindow):
             "EfficientNetB0": "efficientnetb0",
         }
 
-        self.analytics_page.model_box.setCurrentText(
-            folder_name[name]
-        )
+        index = self.analytics_page.model_box.findData("custom_cnn")
+        self.analytics_page.model_box.setCurrentIndex(index)
 
         self.analytics_page.load_results()
 

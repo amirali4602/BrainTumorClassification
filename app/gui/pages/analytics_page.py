@@ -1,18 +1,19 @@
 import json
-from pathlib import Path
 
 from PySide6.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QHBoxLayout,
-    QGridLayout,
     QLabel,
     QPushButton,
     QComboBox,
+    QGridLayout,
+    QTabWidget,
 )
-from app.gui.widgets.metrics_card import MetricsCard
+from app.gui.widgets.comparison_gallery import ComparisonGallery
 from app.config import RESULTS_DIR
 from app.gui.widgets.image_card import ImageCard
+from app.gui.widgets.metrics_card import MetricsCard
 
 
 class AnalyticsPage(QWidget):
@@ -24,7 +25,11 @@ class AnalyticsPage(QWidget):
 
     def _build_ui(self):
 
-        layout = QVBoxLayout(self)
+        main_layout = QVBoxLayout(self)
+
+        # -----------------------------
+        # Top controls
+        # -----------------------------
 
         top = QHBoxLayout()
 
@@ -32,11 +37,9 @@ class AnalyticsPage(QWidget):
 
         self.model_box = QComboBox()
 
-        self.model_box.addItems([
-            "custom_cnn",
-            "resnet50",
-            "efficientnetb0",
-        ])
+        self.model_box.addItem("Custom CNN", "custom_cnn")
+        self.model_box.addItem("ResNet50", "resnet50")
+        self.model_box.addItem("EfficientNetB0", "efficientnetb0")
 
         self.refresh_button = QPushButton("Refresh")
 
@@ -46,39 +49,94 @@ class AnalyticsPage(QWidget):
 
         top.addWidget(self.refresh_button)
 
-        layout.addLayout(top)
+        main_layout.addLayout(top)
 
-        grid = QGridLayout()
+        # -----------------------------
+        # Analytics Tabs
+        # -----------------------------
+
+        self.tabs = QTabWidget()
+
+        main_layout.addWidget(self.tabs)
+
+        self.training_tab = QWidget()
+
+        self.evaluation_tab = QWidget()
+
+        self.comparison_tab = QWidget()
+
+        self.tabs.addTab(
+            self.training_tab,
+            "Training",
+        )
+
+        self.tabs.addTab(
+            self.evaluation_tab,
+            "Evaluation",
+        )
+
+        self.tabs.addTab(
+            self.comparison_tab,
+            "Comparison",
+        )
+
+        # ===================================================
+        # Training
+        # ===================================================
+
+        training_layout = QGridLayout(self.training_tab)
 
         self.accuracy_card = ImageCard("Accuracy")
 
         self.loss_card = ImageCard("Loss")
 
-        self.confusion_card = ImageCard("Confusion Matrix")
-
-        self.metrics_card = MetricsCard()
-
-        grid.addWidget(
+        training_layout.addWidget(
             self.accuracy_card,
             0,
             0,
         )
 
-        grid.addWidget(
+        training_layout.addWidget(
             self.loss_card,
             0,
             1,
         )
 
-        grid.addWidget(
-            self.confusion_card,
-            1,
-            0,
-            1,
-            2,
+        # ===================================================
+        # Evaluation
+        # ===================================================
+
+        evaluation_layout = QVBoxLayout(self.evaluation_tab)
+
+        self.confusion_card = ImageCard(
+            "Confusion Matrix"
         )
 
-        layout.addLayout(grid)
+        self.metrics_card = MetricsCard()
+
+        evaluation_layout.addWidget(
+            self.confusion_card
+        )
+
+        evaluation_layout.addWidget(
+            self.metrics_card
+        )
+
+        # ===================================================
+        # Comparison
+        # ===================================================
+
+        comparison_layout = QVBoxLayout(
+            self.comparison_tab
+        )
+
+        self.comparison_gallery = ComparisonGallery()
+
+        comparison_layout.addWidget(
+            self.comparison_gallery
+        )
+
+        # -----------------------------
 
         self.refresh_button.clicked.connect(
             self.load_results
@@ -87,14 +145,14 @@ class AnalyticsPage(QWidget):
         self.model_box.currentIndexChanged.connect(
             self.load_results
         )
-        layout.addWidget(self.metrics_card)
+
         self.load_results()
 
     def load_results(self):
 
         folder = (
             RESULTS_DIR /
-            self.model_box.currentText()
+            self.model_box.currentData()
         )
 
         self.accuracy_card.load(
@@ -109,14 +167,22 @@ class AnalyticsPage(QWidget):
             folder / "confusion_matrix.png"
         )
 
+        self.comparison_gallery.refresh()
+
         metrics_file = folder / "metrics.json"
 
         if metrics_file.exists():
 
-            with open(metrics_file) as f:
+            with open(
+                metrics_file,
+                encoding="utf-8",
+            ) as f:
+
                 metrics = json.load(f)
 
-            self.metrics_card.update_metrics(metrics)
+            self.metrics_card.update_metrics(
+                metrics
+            )
 
         else:
 
