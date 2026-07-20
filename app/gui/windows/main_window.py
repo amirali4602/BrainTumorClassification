@@ -1,17 +1,13 @@
 from pathlib import Path
 from PySide6.QtWidgets import (
-    QHBoxLayout,
     QLabel,
     QMainWindow,
-    QWidget,
     QDialog,
     QDockWidget
 )
 from PySide6.QtGui import QAction, QIcon, Qt
 from app.config import LOGO_DIR, VALID_EXTENSIONS
-from app.gui.widgets.image_view import ImageView
 from app.gui.widgets.log_console import LogConsole
-from app.gui.widgets.prediction_panel import PredictionPanel
 from app.gui.widgets.toolbar import MainToolBar
 from app.gui.dialogs.file_dialog import open_image_dialog
 from app.inference.predictor import Predictor
@@ -23,7 +19,6 @@ from PySide6.QtWidgets import QTabWidget
 from app.gui.pages.prediction_page import PredictionPage
 from app.gui.pages.analytics_page import AnalyticsPage
 from app.gui.pages.models_page import ModelsPage
-from app.gui.pages.training_page import TrainingPage
 
 class MainWindow(QMainWindow):
 
@@ -32,6 +27,7 @@ class MainWindow(QMainWindow):
         self.current_image = None
         self.current_model = "Custom CNN"
         self.predictor = Predictor()
+        self.log_console = LogConsole()
         self._initialize_window()
 
         self._create_central_widget()
@@ -41,7 +37,6 @@ class MainWindow(QMainWindow):
 
         self._connect_signals()
 
-        self.log_console = LogConsole()
 
         dock = QDockWidget("Log", self)
 
@@ -90,6 +85,9 @@ class MainWindow(QMainWindow):
         self.toolbar.retrain_action.triggered.connect(
             self.retrain_model
         )
+        self.models_page.activate_button.clicked.connect(
+            self.activate_selected_model
+        )
     def _create_central_widget(self):
 
         self.tabs = QTabWidget()
@@ -99,8 +97,6 @@ class MainWindow(QMainWindow):
         self.analytics_page = AnalyticsPage()
 
         self.models_page = ModelsPage()
-
-        self.training_page = TrainingPage()
 
         self.tabs.addTab(
             self.prediction_page,
@@ -115,11 +111,6 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(
             self.models_page,
             "Models",
-        )
-
-        self.tabs.addTab(
-            self.training_page,
-            "Training",
         )
 
         self.setCentralWidget(self.tabs)
@@ -186,6 +177,8 @@ class MainWindow(QMainWindow):
         self.status_bar = self.statusBar()
 
         self.status_bar.showMessage("Ready")
+
+        self.log_console.log("Image cleared.")
 
         self.model_status = QLabel()
 
@@ -263,13 +256,24 @@ class MainWindow(QMainWindow):
             self.log_console.log(
                 "Prediction failed."
             )
-            self.log_console.log(e)
+            self.log_console.log(str(e))
 
     def change_model(self, name):
 
         self.current_model = name
 
         self.predictor.reload(name)
+        folder_name = {
+            "Custom CNN": "custom_cnn",
+            "ResNet50": "resnet50",
+            "EfficientNetB0": "efficientnetb0",
+        }
+
+        self.analytics_page.model_box.setCurrentText(
+            folder_name[name]
+        )
+
+        self.analytics_page.load_results()
 
         self.update_model_status()
 
@@ -320,7 +324,35 @@ class MainWindow(QMainWindow):
 
         self.predictor.reload(model)
 
+        self.change_model(model)
+
         self.status_bar.showMessage(
             "Training completed.",
             5000,
+        )
+
+        self.models_page.refresh()
+
+        self.analytics_page.load_results()
+
+    def activate_selected_model(self):
+
+        model = self.models_page.table.selected_model()
+
+        if model is None:
+
+            self.status_bar.showMessage(
+                "No model selected."
+            )
+
+            return
+
+        names = {
+            "custom_cnn": "Custom CNN",
+            "resnet50": "ResNet50",
+            "efficientnetb0": "EfficientNetB0",
+        }
+
+        self.change_model(
+            names.get(model, model)
         )

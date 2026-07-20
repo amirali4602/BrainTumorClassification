@@ -1,10 +1,11 @@
-from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QLabel,
     QVBoxLayout,
+    QPushButton,
     QWidget,
 )
 
+from app.gui.widgets.models_table import ModelsTable
+from app.gui.services.model_repository import ModelRepository
 
 class ModelsPage(QWidget):
 
@@ -13,10 +14,22 @@ class ModelsPage(QWidget):
 
         layout = QVBoxLayout(self)
 
-        label = QLabel(
-            "Models page\n(Coming in Sprint 8)"
+        self.table = ModelsTable()
+
+        self.activate_button = QPushButton(
+            "Set Active Model"
         )
 
-        label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.table)
 
-        layout.addWidget(label)
+        layout.addWidget(self.activate_button)
+
+        self.repository = ModelRepository()
+
+        self.refresh()
+        
+    def refresh(self):
+
+        models = self.repository.load_models()
+
+        self.table.load_models(models)
