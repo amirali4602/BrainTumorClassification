@@ -19,6 +19,12 @@ from app.gui.dialogs.about_dialog import show_about
 from app.gui.dialogs.retrain_dialog import RetrainDialog
 from app.training.retrainer import ModelRetrainer
 
+from PySide6.QtWidgets import QTabWidget
+from app.gui.pages.prediction_page import PredictionPage
+from app.gui.pages.analytics_page import AnalyticsPage
+from app.gui.pages.models_page import ModelsPage
+from app.gui.pages.training_page import TrainingPage
+
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -75,7 +81,7 @@ class MainWindow(QMainWindow):
         self.efficient_action.triggered.connect(
             lambda: self.change_model("EfficientNetB0")
         )
-        self.image_view.imageDropped.connect(
+        self.prediction_page.image_view.imageDropped.connect(
             self.load_image
         )
         self.about_action.triggered.connect(
@@ -86,21 +92,37 @@ class MainWindow(QMainWindow):
         )
     def _create_central_widget(self):
 
-        central = QWidget()
+        self.tabs = QTabWidget()
 
-        self.setCentralWidget(central)
+        self.prediction_page = PredictionPage()
 
-        layout = QHBoxLayout(central)
+        self.analytics_page = AnalyticsPage()
 
-        layout.setContentsMargins(15, 15, 15, 15)
+        self.models_page = ModelsPage()
 
-        self.image_view = ImageView()
+        self.training_page = TrainingPage()
 
-        self.prediction_panel = PredictionPanel()
+        self.tabs.addTab(
+            self.prediction_page,
+            "Prediction",
+        )
 
-        layout.addWidget(self.image_view, 3)
+        self.tabs.addTab(
+            self.analytics_page,
+            "Analytics",
+        )
 
-        layout.addWidget(self.prediction_panel, 1)
+        self.tabs.addTab(
+            self.models_page,
+            "Models",
+        )
+
+        self.tabs.addTab(
+            self.training_page,
+            "Training",
+        )
+
+        self.setCentralWidget(self.tabs)
 
     def _create_menu_bar(self):
 
@@ -199,7 +221,7 @@ class MainWindow(QMainWindow):
             return
         self.current_image = filename
 
-        self.image_view.set_image(filename)
+        self.prediction_page.image_view.set_image(filename)
 
         self.status_bar.showMessage(
             f"Loaded: {Path(filename).name}"
@@ -222,7 +244,7 @@ class MainWindow(QMainWindow):
                 self.current_image
             )
 
-            self.prediction_panel.update_result(
+            self.prediction_page.prediction_panel.update_result(
                 result,
                 self.current_model,
             )
@@ -263,9 +285,9 @@ class MainWindow(QMainWindow):
 
         self.current_image = None
 
-        self.image_view.clear()
+        self.prediction_page.image_view.clear()
 
-        self.prediction_panel.clear()
+        self.prediction_page.prediction_panel.clear()
 
         self.statusBar().showMessage(
             "Ready"
