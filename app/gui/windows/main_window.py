@@ -1,8 +1,10 @@
 from pathlib import Path
 from PySide6.QtWidgets import (
     QHBoxLayout,
+    QLabel,
     QMainWindow,
     QWidget,
+    QDialog
 )
 from PySide6.QtGui import QAction, QIcon
 from app.config import LOGO_DIR, VALID_EXTENSIONS
@@ -12,6 +14,8 @@ from app.gui.widgets.toolbar import MainToolBar
 from app.gui.dialogs.file_dialog import open_image_dialog
 from app.inference.predictor import Predictor
 from app.gui.dialogs.about_dialog import show_about
+from app.gui.dialogs.retrain_dialog import RetrainDialog
+from app.training.retrainer import ModelRetrainer
 
 class MainWindow(QMainWindow):
 
@@ -20,7 +24,6 @@ class MainWindow(QMainWindow):
         self.current_image = None
         self.current_model = "Custom CNN"
         self.predictor = Predictor()
-
         self._initialize_window()
 
         self._create_central_widget()
@@ -64,6 +67,9 @@ class MainWindow(QMainWindow):
         )
         self.about_action.triggered.connect(
             lambda: show_about(self)
+        )
+        self.toolbar.retrain_action.triggered.connect(
+            self.retrain_model
         )
     def _create_central_widget(self):
 
@@ -143,7 +149,22 @@ class MainWindow(QMainWindow):
     def _create_status_bar(self):
 
         self.status_bar = self.statusBar()
+
         self.status_bar.showMessage("Ready")
+
+        self.model_status = QLabel()
+
+        self.status_bar.addPermanentWidget(
+            self.model_status
+        )
+
+        self.update_model_status()
+
+    def update_model_status(self):
+
+        self.model_status.setText(
+            f"Model: {self.current_model}"
+        )
 
     def open_image(self):
 
@@ -182,8 +203,7 @@ class MainWindow(QMainWindow):
         try:
 
             result = self.predictor.predict(
-                self.current_image,
-                self.current_model,
+                self.current_image
             )
 
             self.prediction_panel.update_result(
@@ -206,8 +226,13 @@ class MainWindow(QMainWindow):
 
         self.current_model = name
 
-        self.statusBar().showMessage(
-            f"Model: {name}"
+        self.predictor.reload(name)
+
+        self.update_model_status()
+
+        self.status_bar.showMessage(
+            f"Current model changed to {name}",
+            3000,
         )
 
     def clear_image(self):
@@ -222,3 +247,32 @@ class MainWindow(QMainWindow):
             "Ready"
         )
         self.setWindowTitle("NeuroVision AI")
+
+    def retrain_model(self):
+
+        dialog = RetrainDialog(self)
+
+        if dialog.exec() != QDialog.Accepted:
+            return
+
+        model = dialog.model_box.currentText()
+
+        epochs = dialog.epochs.value()
+
+        self.status_bar.showMessage(
+            "Training started..."
+        )
+
+        retrainer = ModelRetrainer()
+
+        retrainer.train(
+            model,
+            epochs,
+        )
+
+        self.predictor.reload(model)
+
+        self.status_bar.showMessage(
+            "Training completed.",
+            5000,
+        )

@@ -21,10 +21,16 @@ from app.evaluation.evaluator import Evaluator
 
 class TrainingRunner:
 
-    def __init__(self, model, model_name):
+    def __init__(
+        self,
+        model,
+        model_name,
+        epochs,
+    ):
 
         self.model = model
         self.model_name = model_name
+        self.epochs = epochs
 
     def run(self):
 
@@ -68,6 +74,7 @@ class TrainingRunner:
             train_ds,
             val_ds,
             model_name=self.model_name,
+            epochs=self.epochs,
         )
 
         HistoryManager(

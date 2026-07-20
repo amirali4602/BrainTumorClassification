@@ -14,26 +14,24 @@ CLASS_NAMES = [
 
 
 class Predictor:
-
-    def __init__(self):
+    def __init__(
+        self,
+        model_name="Custom CNN",
+    ):
 
         self.loader = ModelLoader()
 
-    def predict(
-        self,
-        image_path,
-        model_name,
-    ):
+        self.model = None
 
-        model = self.loader.load(model_name)
+        self.current_model = None
+
+        self.reload(model_name)
+
+    def predict(self, image_path):
 
         image = preprocess_image(image_path)
 
-        prediction = model.predict(
-            image,
-            verbose=0,
-        )[0]
-        print(prediction)
+        prediction = self.model.predict(image)[0]
         index = np.argmax(prediction)
 
         probabilities = {
@@ -46,3 +44,9 @@ class Predictor:
             confidence=float(prediction[index]),
             probabilities=probabilities,
         )
+    
+    def reload(self, model_name):
+
+        self.current_model = model_name
+
+        self.model = self.loader.load(model_name)

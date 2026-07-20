@@ -1,4 +1,4 @@
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon
 from PySide6.QtWidgets import QToolBar
 
 
@@ -13,11 +13,15 @@ class MainToolBar(QToolBar):
         self.predict_action = QAction("Predict", self)
         self.clear_action = QAction("Clear", self)
         self.exit_action = QAction("Exit", self)
+        self.retrain_action = QAction(QIcon(),"Retrain",self)
 
         self.addAction(self.open_action)
         self.addSeparator()
 
         self.addAction(self.predict_action)
+        self.addSeparator()
+
+        self.addAction(self.retrain_action)
         self.addSeparator()
 
         self.addAction(self.clear_action)
