@@ -8,44 +8,32 @@ class ImageView(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.pixmap = None
-
-        self.image_label = QLabel("MRI Image\n\nLoad an image to begin")
-        self.image_label.setAlignment(Qt.AlignCenter)
-
-        self.image_label.setMinimumSize(600, 600)
-
-        self.image_label.setStyleSheet("""
-            QLabel {
-                border: 2px dashed #555;
-                border-radius: 12px;
-                font-size: 18px;
-                color: #BBBBBB;
-                background-color: #2B2D42;
-            }
-        """)
+        self.current_pixmap = None
 
         layout = QVBoxLayout(self)
+
+        self.image_label = QLabel("No Image Loaded")
+
+        self.image_label.setAlignment(Qt.AlignCenter)
+        self.image_label.setMinimumSize(600, 600)
+
         layout.addWidget(self.image_label)
 
-    def set_image(self, image_path: str):
+    def set_image(self, filename):
 
-        pixmap = QPixmap(image_path)
+        pixmap = QPixmap(filename)
 
-        if pixmap.isNull():
-            return
-
-        self.pixmap = pixmap
+        self.current_pixmap = pixmap
 
         self._update_pixmap()
 
     def clear(self):
 
-        self.pixmap = None
+        self.current_pixmap = None
 
         self.image_label.setPixmap(QPixmap())
 
-        self.image_label.setText("MRI Image\n\nLoad an image to begin")
+        self.image_label.setText("No Image Loaded")
 
     def resizeEvent(self, event):
 
@@ -55,10 +43,10 @@ class ImageView(QWidget):
 
     def _update_pixmap(self):
 
-        if self.pixmap is None:
+        if self.current_pixmap is None:
             return
 
-        scaled = self.pixmap.scaled(
+        scaled = self.current_pixmap.scaled(
             self.image_label.size(),
             Qt.KeepAspectRatio,
             Qt.SmoothTransformation,

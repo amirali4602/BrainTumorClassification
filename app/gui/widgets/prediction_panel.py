@@ -1,138 +1,106 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QComboBox,
     QFrame,
     QLabel,
-    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
     QVBoxLayout,
+    QWidget,
 )
 
 
-class PredictionPanel(QFrame):
+class PredictionPanel(QWidget):
 
     def __init__(self):
         super().__init__()
 
-        self.setMinimumWidth(340)
-
-        self.setStyleSheet("""
-        QFrame{
-            background:#2B2D42;
-            border-radius:12px;
-            border:1px solid #3B3D55;
-        }
-
-        QLabel#Title{
-            font-size:18px;
-            font-weight:bold;
-            color:white;
-            border:none;
-        }
-
-        QLabel#Header{
-            font-size:12px;
-            color:#BBBBBB;
-            border:none;
-        }
-
-        QLabel#Value{
-            font-size:16px;
-            font-weight:bold;
-            color:white;
-            border:none;
-        }
-        """)
-
         layout = QVBoxLayout(self)
-
-        layout.setSpacing(18)
-
-        layout.setContentsMargins(20, 20, 20, 20)
 
         title = QLabel("Prediction")
 
-        title.setObjectName("Title")
+        title.setAlignment(Qt.AlignCenter)
 
-        layout.addWidget(title)
+        self.model_label = QLabel("-")
 
-        layout.addSpacing(10)
+        self.class_label = QLabel("-")
 
-        layout.addWidget(QLabel("Model"))
-        self.model_box = QComboBox()
+        self.confidence_label = QLabel("-")
 
-        self.model_box.addItems(
+        self.table = QTableWidget(4, 2)
+
+        self.table.setHorizontalHeaderLabels(
             [
-                "Custom CNN",
-                "ResNet50",
-                "EfficientNetB0",
+                "Class",
+                "Probability",
             ]
         )
 
-        layout.addWidget(self.model_box)
+        self.table.verticalHeader().hide()
 
-        layout.addSpacing(10)
+        self.table.horizontalHeader().setStretchLastSection(True)
 
-        layout.addWidget(self._header("Prediction"))
+        layout.addWidget(title)
 
-        self.prediction_label = self._value("-")
+        layout.addWidget(QLabel("Model"))
 
-        layout.addWidget(self.prediction_label)
+        layout.addWidget(self.model_label)
 
-        layout.addSpacing(10)
+        layout.addWidget(QLabel("Prediction"))
 
-        layout.addWidget(self._header("Confidence"))
+        layout.addWidget(self.class_label)
 
-        self.confidence_label = self._value("-")
+        layout.addWidget(QLabel("Confidence"))
 
         layout.addWidget(self.confidence_label)
 
-        layout.addSpacing(15)
+        line = QFrame()
 
-        layout.addWidget(self._header("Class Probabilities"))
+        line.setFrameShape(QFrame.HLine)
 
-        self.probability_labels = {}
+        layout.addWidget(line)
 
-        for cls in (
-            "Glioma",
-            "Meningioma",
-            "Pituitary",
-            "No Tumor",
-        ):
+        layout.addWidget(QLabel("Probabilities"))
 
-            label = QLabel(f"{cls:<15} 0.00 %")
-
-            label.setObjectName("Value")
-
-            self.probability_labels[cls] = label
-
-            layout.addWidget(label)
+        layout.addWidget(self.table)
 
         layout.addStretch()
 
-        self.load_button = QPushButton("Load Image")
+    def update_result(self, result, model_name):
 
-        self.predict_button = QPushButton("Predict")
+        self.model_label.setText(model_name)
 
-        self.clear_button = QPushButton("Clear")
+        self.class_label.setText(
+            result.predicted_class
+        )
 
-        layout.addWidget(self.load_button)
+        self.confidence_label.setText(
+            f"{result.confidence * 100:.2f}%"
+        )
 
-        layout.addWidget(self.predict_button)
+        for row, (name, value) in enumerate(
+            result.probabilities.items()
+        ):
 
-        layout.addWidget(self.clear_button)
+            self.table.setItem(
+                row,
+                0,
+                QTableWidgetItem(name),
+            )
 
-    def _header(self, text):
+            self.table.setItem(
+                row,
+                1,
+                QTableWidgetItem(
+                    f"{value * 100:.2f}%"
+                ),
+            )
 
-        label = QLabel(text)
+    def clear(self):
 
-        label.setObjectName("Header")
+        self.model_label.setText("-")
 
-        return label
+        self.class_label.setText("-")
 
-    def _value(self, text):
+        self.confidence_label.setText("-")
 
-        label = QLabel(text)
-
-        label.setObjectName("Value")
-
-        return label
+        self.table.clearContents()
