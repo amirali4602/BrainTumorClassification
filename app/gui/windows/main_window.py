@@ -4,11 +4,13 @@ from PySide6.QtWidgets import (
     QLabel,
     QMainWindow,
     QWidget,
-    QDialog
+    QDialog,
+    QDockWidget
 )
-from PySide6.QtGui import QAction, QIcon
+from PySide6.QtGui import QAction, QIcon, Qt
 from app.config import LOGO_DIR, VALID_EXTENSIONS
 from app.gui.widgets.image_view import ImageView
+from app.gui.widgets.log_console import LogConsole
 from app.gui.widgets.prediction_panel import PredictionPanel
 from app.gui.widgets.toolbar import MainToolBar
 from app.gui.dialogs.file_dialog import open_image_dialog
@@ -32,6 +34,17 @@ class MainWindow(QMainWindow):
         self._create_status_bar()
 
         self._connect_signals()
+
+        self.log_console = LogConsole()
+
+        dock = QDockWidget("Log", self)
+
+        dock.setWidget(self.log_console)
+
+        self.addDockWidget(
+            Qt.BottomDockWidgetArea,
+            dock,
+        )
 
     def _initialize_window(self):
         
@@ -191,6 +204,9 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(
             f"Loaded: {Path(filename).name}"
         )
+        self.log_console.log(
+            f"Loaded image: {Path(filename).name}"
+        )
         self.setWindowTitle(
             f"NeuroVision AI — {Path(filename).name}"
         )
@@ -213,14 +229,19 @@ class MainWindow(QMainWindow):
             self.status_bar.showMessage(
                 "Prediction completed."
             )
+            self.log_console.log(
+                "Prediction completed."
+            )
 
         except Exception as e:
 
             self.status_bar.showMessage(
                 "Prediction failed."
             )
-
-            print(e)
+            self.log_console.log(
+                "Prediction failed."
+            )
+            self.log_console.log(e)
 
     def change_model(self, name):
 
@@ -233,6 +254,9 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(
             f"Current model changed to {name}",
             3000,
+        )
+        self.log_console.log(
+            f"Current model: {name}"
         )
 
     def clear_image(self):
@@ -262,7 +286,9 @@ class MainWindow(QMainWindow):
         self.status_bar.showMessage(
             "Training started..."
         )
-
+        self.log_console.log(
+            "Training started..."
+        )
         retrainer = ModelRetrainer()
 
         retrainer.train(
