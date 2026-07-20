@@ -18,7 +18,6 @@ from app.training.retrainer import ModelRetrainer
 from PySide6.QtWidgets import QTabWidget
 from app.gui.pages.prediction_page import PredictionPage
 from app.gui.pages.analytics_page import AnalyticsPage
-from app.gui.pages.models_page import ModelsPage
 
 class MainWindow(QMainWindow):
 
@@ -85,9 +84,6 @@ class MainWindow(QMainWindow):
         self.toolbar.retrain_action.triggered.connect(
             self.retrain_model
         )
-        self.models_page.activate_button.clicked.connect(
-            self.activate_selected_model
-        )
     def _create_central_widget(self):
 
         self.tabs = QTabWidget()
@@ -95,8 +91,6 @@ class MainWindow(QMainWindow):
         self.prediction_page = PredictionPage()
 
         self.analytics_page = AnalyticsPage()
-
-        self.models_page = ModelsPage()
 
         self.tabs.addTab(
             self.prediction_page,
@@ -108,10 +102,6 @@ class MainWindow(QMainWindow):
             "Analytics",
         )
 
-        self.tabs.addTab(
-            self.models_page,
-            "Models",
-        )
 
         self.setCentralWidget(self.tabs)
 

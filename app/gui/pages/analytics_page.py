@@ -14,7 +14,7 @@ from app.gui.widgets.comparison_gallery import ComparisonGallery
 from app.config import RESULTS_DIR
 from app.gui.widgets.image_card import ImageCard
 from app.gui.widgets.metrics_card import MetricsCard
-
+from app.gui.widgets.comparison_table import ComparisonTable
 
 class AnalyticsPage(QWidget):
 
@@ -132,8 +132,16 @@ class AnalyticsPage(QWidget):
 
         self.comparison_gallery = ComparisonGallery()
 
+        self.comparison_table = ComparisonTable()
+
         comparison_layout.addWidget(
-            self.comparison_gallery
+            self.comparison_gallery,
+            3,
+        )
+
+        comparison_layout.addWidget(
+            self.comparison_table,
+            2,
         )
 
         # -----------------------------
@@ -168,6 +176,8 @@ class AnalyticsPage(QWidget):
         )
 
         self.comparison_gallery.refresh()
+
+        self.comparison_table.refresh()
 
         metrics_file = folder / "metrics.json"
 
