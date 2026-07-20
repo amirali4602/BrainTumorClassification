@@ -65,4 +65,24 @@ QComboBox {{
 QLabel {{
     color: {TEXT};
 }}
+
+QProgressBar {{
+
+    border: 1px solid #555;
+
+    border-radius: 5px;
+
+    background: #2d2d2d;
+
+    text-align: center;
+
+    height: 20px;
+}}
+
+QProgressBar::chunk {{
+
+    background-color: #2e8bff;
+
+    border-radius: 4px;
+}}
 """

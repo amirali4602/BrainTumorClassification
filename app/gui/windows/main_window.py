@@ -4,12 +4,14 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QWidget,
 )
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QIcon
+from app.config import LOGO_DIR, VALID_EXTENSIONS
 from app.gui.widgets.image_view import ImageView
 from app.gui.widgets.prediction_panel import PredictionPanel
 from app.gui.widgets.toolbar import MainToolBar
 from app.gui.dialogs.file_dialog import open_image_dialog
 from app.inference.predictor import Predictor
+from app.gui.dialogs.about_dialog import show_about
 
 class MainWindow(QMainWindow):
 
@@ -33,6 +35,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("NeuroVision AI")
         self.resize(1400, 800)
         self.setMinimumSize(1200, 700)
+        self.setWindowIcon(QIcon(LOGO_DIR))
 
     def _connect_signals(self):
 
@@ -55,6 +58,12 @@ class MainWindow(QMainWindow):
 
         self.efficient_action.triggered.connect(
             lambda: self.change_model("EfficientNetB0")
+        )
+        self.image_view.imageDropped.connect(
+            self.load_image
+        )
+        self.about_action.triggered.connect(
+            lambda: show_about(self)
         )
     def _create_central_widget(self):
 
@@ -110,6 +119,16 @@ class MainWindow(QMainWindow):
 
         help_menu.addAction(self.about_action)
 
+        self.open_action.setShortcut("Ctrl+O")
+
+        self.exit_action.setShortcut("Ctrl+Q")
+
+        self.custom_action.setShortcut("Ctrl+1")
+
+        self.resnet_action.setShortcut("Ctrl+2")
+
+        self.efficient_action.setShortcut("Ctrl+3")
+
 
     def _create_tool_bar(self):
 
@@ -117,6 +136,9 @@ class MainWindow(QMainWindow):
 
         self.addToolBar(self.toolbar)
 
+        self.toolbar.predict_action.setShortcut("Ctrl+P")
+
+        self.toolbar.clear_action.setShortcut("Ctrl+L")
 
     def _create_status_bar(self):
 
@@ -127,15 +149,29 @@ class MainWindow(QMainWindow):
 
         filename = open_image_dialog(self)
 
-        if not filename:
-            return
+        if filename:
 
+            self.load_image(filename)
+            
+    def load_image(self, filename):
+        suffix = Path(filename).suffix.lower()
+
+        if suffix not in VALID_EXTENSIONS:
+
+            self.status_bar.showMessage(
+                "Unsupported file type."
+            )
+
+            return
         self.current_image = filename
 
         self.image_view.set_image(filename)
 
         self.status_bar.showMessage(
             f"Loaded: {Path(filename).name}"
+        )
+        self.setWindowTitle(
+            f"NeuroVision AI — {Path(filename).name}"
         )
 
     def predict_image(self):
@@ -185,4 +221,4 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(
             "Ready"
         )
-
+        self.setWindowTitle("NeuroVision AI")
