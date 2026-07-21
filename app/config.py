@@ -33,7 +33,7 @@ VALID_EXTENSIONS = {
     ".bmp",
 }
 
-MODEL_NAME = "efficientnetb0"
+MODEL_NAME = "resnet50"
 
 NUM_CLASSES = len(CLASS_NAMES)
 

@@ -26,7 +26,10 @@ class ResNet50Model(BaseModel):
             input_shape=input_shape,
         )
 
-        backbone.trainable = False
+        backbone.trainable = True
+
+        for layer in backbone.layers[:-30]:
+            layer.trainable = False
 
 
         x = backbone.output

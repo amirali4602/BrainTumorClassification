@@ -13,6 +13,7 @@ def main():
     TrainingRunner(
         model,
         MODEL_NAME,
+        epochs=50
     ).run()
 
 

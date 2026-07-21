@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QAction, QIcon, Qt
 from app.config import LOGO_DIR, VALID_EXTENSIONS
+from app.evaluation.comparison import ModelComparison
 from app.gui.widgets.log_console import LogConsole
 from app.gui.widgets.toolbar import MainToolBar
 from app.gui.dialogs.file_dialog import open_image_dialog
@@ -18,6 +19,7 @@ from app.training.retrainer import ModelRetrainer
 from PySide6.QtWidgets import QTabWidget
 from app.gui.pages.prediction_page import PredictionPage
 from app.gui.pages.analytics_page import AnalyticsPage
+from app.evaluation.confusion_comparison import ConfusionComparison
 
 class MainWindow(QMainWindow):
 
@@ -83,6 +85,9 @@ class MainWindow(QMainWindow):
         )
         self.toolbar.retrain_action.triggered.connect(
             self.retrain_model
+        )
+        self.toolbar.recompare_action.triggered.connect(
+            self.recompare_models
         )
     def _create_central_widget(self):
 
@@ -319,29 +324,16 @@ class MainWindow(QMainWindow):
             "Training completed.",
             5000,
         )
-
-        self.models_page.refresh()
-
+        ModelComparison().run()
+        ConfusionComparison().run()
+        self.log_console.log(
+            "Training completed"
+        )
         self.analytics_page.load_results()
 
-    def activate_selected_model(self):
-
-        model = self.models_page.table.selected_model()
-
-        if model is None:
-
-            self.status_bar.showMessage(
-                "No model selected."
-            )
-
-            return
-
-        names = {
-            "custom_cnn": "Custom CNN",
-            "resnet50": "ResNet50",
-            "efficientnetb0": "EfficientNetB0",
-        }
-
-        self.change_model(
-            names.get(model, model)
-        )
+    def recompare_models(self):
+        self.log_console.log("Comparison started...")
+        ModelComparison().run()
+        ConfusionComparison().run()
+        self.log_console.log("Comparison completed")
+   

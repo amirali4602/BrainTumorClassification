@@ -13,7 +13,6 @@ MODEL_FILES = {
 class ModelLoader:
 
     def __init__(self):
-
         self._cache = {}
 
     def load(self, model_name):
@@ -23,8 +22,14 @@ class ModelLoader:
 
         path = MODELS_DIR / MODEL_FILES[model_name]
 
+        if not path.exists():
+            print(f"Model not found: {path}")
+            return None
+
         model = load_model(path)
 
         self._cache[model_name] = model
+
         print(f"Loading model: {path}")
+
         return model

@@ -14,6 +14,7 @@ class MainToolBar(QToolBar):
         self.clear_action = QAction("Clear", self)
         self.exit_action = QAction("Exit", self)
         self.retrain_action = QAction(QIcon(),"Retrain",self)
+        self.recompare_action = QAction(QIcon(),"ReCompare",self)
 
         self.addAction(self.open_action)
         self.addSeparator()
@@ -22,6 +23,9 @@ class MainToolBar(QToolBar):
         self.addSeparator()
 
         self.addAction(self.retrain_action)
+        self.addSeparator()
+
+        self.addAction(self.recompare_action)
         self.addSeparator()
 
         self.addAction(self.clear_action)
