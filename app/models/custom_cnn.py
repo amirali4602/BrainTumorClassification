@@ -105,7 +105,7 @@ class CustomCNNModel(BaseModel):
                 tf.keras.layers.Dense(
                     256,
                     activation="relu",
-                    kernel_regularizer=l2,
+                    kernel_regularizer=tf.keras.regularizers.l2(1e-4),
                 ),
 
                 tf.keras.layers.Dropout(0.5),
@@ -113,6 +113,7 @@ class CustomCNNModel(BaseModel):
                 tf.keras.layers.Dense(
                     num_classes,
                     activation="softmax",
+                    kernel_regularizer=tf.keras.regularizers.l2(1e-4),
                 ),
             ],
             name="CustomCNN",

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import tensorflow as tf
+
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
 DATASET_DIR = ROOT_DIR / "dataset"
@@ -41,8 +43,8 @@ NUM_CLASSES = len(CLASS_NAMES)
 # Image
 # ===============================
 
-IMAGE_HEIGHT = 224
-IMAGE_WIDTH = 224
+IMAGE_HEIGHT = 300
+IMAGE_WIDTH = 300
 IMAGE_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
 
 CHANNELS = 3
@@ -57,15 +59,15 @@ VALIDATION_SPLIT = 0.2
 
 SHUFFLE_BUFFER = 1000
 
-AUTOTUNE = -1
+AUTOTUNE = tf.data.AUTOTUNE
 
 # ===============================
 # Training
 # ===============================
 
-EPOCHS = 20
+EPOCHS = 50
 
-LEARNING_RATE = 1e-4
+LEARNING_RATE = 1e-5
 
 RANDOM_SEED = 42
 

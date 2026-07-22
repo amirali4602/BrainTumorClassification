@@ -19,7 +19,10 @@ class BaseModel(ABC):
     def compile(self):
 
         self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(),
+            optimizer=tf.keras.optimizers.AdamW(
+                learning_rate=1e-5,
+                weight_decay=1e-4,
+            ),
             loss="sparse_categorical_crossentropy",
             metrics=["accuracy"],
         )

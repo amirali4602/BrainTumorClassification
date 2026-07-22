@@ -39,6 +39,7 @@ class ResNet50Model(BaseModel):
         x = Dense(
             256,
             activation="relu",
+            kernel_regularizer=tf.keras.regularizers.l2(1e-4),
         )(x)
 
         x = Dropout(
@@ -48,6 +49,7 @@ class ResNet50Model(BaseModel):
         output = Dense(
             num_classes,
             activation="softmax",
+            kernel_regularizer=tf.keras.regularizers.l2(1e-4),
         )(x)
 
 
