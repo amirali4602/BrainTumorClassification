@@ -224,21 +224,25 @@ Comparison charts are generated automatically after training.
 
 ### Prediction
 
-> Add a screenshot of the prediction interface here.
+![Main Window](docs/images/main_window.png)
 
 ### Analytics
 
-> Add a screenshot of the analytics dashboard here.
+![Analytics](docs/images/analytics.png)
+
+### Evaluation
+
+![Comparison](docs/images/evaluation.png)
 
 ### Model Comparison
 
-> Add the generated comparison charts here.
+![Comparison](docs/images/comparison.png)
 
 ---
 
 ## 📹 Demo Video
 
-
+![demo](docs/video/demo.gif)
 
 ---
 ## 📈 Future Improvements

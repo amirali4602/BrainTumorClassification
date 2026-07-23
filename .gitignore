@@ -17,7 +17,7 @@ saved_models/
 *.h5
 
 # Outputs
-results/
+# results/
 reports/
 
 # Jupyter
@@ -26,3 +26,5 @@ reports/
 # OS
 Thumbs.db
 .DS_Store
+
+*.mp4
