@@ -26,7 +26,10 @@ class ResNet50Model(BaseModel):
             input_shape=input_shape,
         )
 
-        backbone.trainable = False
+        backbone.trainable = True
+
+        for layer in backbone.layers[:-30]:
+            layer.trainable = False
 
 
         x = backbone.output
@@ -36,6 +39,7 @@ class ResNet50Model(BaseModel):
         x = Dense(
             256,
             activation="relu",
+            kernel_regularizer=tf.keras.regularizers.l2(1e-4),
         )(x)
 
         x = Dropout(
@@ -45,6 +49,7 @@ class ResNet50Model(BaseModel):
         output = Dense(
             num_classes,
             activation="softmax",
+            kernel_regularizer=tf.keras.regularizers.l2(1e-4),
         )(x)
 
 

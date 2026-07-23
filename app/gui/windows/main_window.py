@@ -1,23 +1,25 @@
 from pathlib import Path
 from PySide6.QtWidgets import (
-    QHBoxLayout,
     QLabel,
     QMainWindow,
-    QWidget,
     QDialog,
     QDockWidget
 )
 from PySide6.QtGui import QAction, QIcon, Qt
-from app.config import LOGO_DIR, VALID_EXTENSIONS
-from app.gui.widgets.image_view import ImageView
+from app.config import LOGO_DIR, MODEL_FILES, VALID_EXTENSIONS
+from app.evaluation.comparison import ModelComparison
 from app.gui.widgets.log_console import LogConsole
-from app.gui.widgets.prediction_panel import PredictionPanel
 from app.gui.widgets.toolbar import MainToolBar
 from app.gui.dialogs.file_dialog import open_image_dialog
 from app.inference.predictor import Predictor
 from app.gui.dialogs.about_dialog import show_about
 from app.gui.dialogs.retrain_dialog import RetrainDialog
 from app.training.retrainer import ModelRetrainer
+
+from PySide6.QtWidgets import QTabWidget
+from app.gui.pages.prediction_page import PredictionPage
+from app.gui.pages.analytics_page import AnalyticsPage
+from app.evaluation.confusion_comparison import ConfusionComparison
 
 class MainWindow(QMainWindow):
 
@@ -26,6 +28,7 @@ class MainWindow(QMainWindow):
         self.current_image = None
         self.current_model = "Custom CNN"
         self.predictor = Predictor()
+        self.log_console = LogConsole()
         self._initialize_window()
 
         self._create_central_widget()
@@ -35,14 +38,13 @@ class MainWindow(QMainWindow):
 
         self._connect_signals()
 
-        self.log_console = LogConsole()
 
         dock = QDockWidget("Log", self)
 
         dock.setWidget(self.log_console)
 
         self.addDockWidget(
-            Qt.BottomDockWidgetArea,
+            Qt.RightDockWidgetArea,
             dock,
         )
 
@@ -75,34 +77,72 @@ class MainWindow(QMainWindow):
         self.efficient_action.triggered.connect(
             lambda: self.change_model("EfficientNetB0")
         )
-        self.image_view.imageDropped.connect(
+
+        self.densenet_action.triggered.connect(
+            lambda: self.change_model("DenseNet121")
+        )
+
+        self.efficientv_action.triggered.connect(
+            lambda: self.change_model("EfficientNetV2B0")
+        )
+
+        self.xception_action.triggered.connect(
+            lambda: self.change_model("Xception")
+        )
+
+        self.mobilenet_action.triggered.connect(
+            lambda: self.change_model("MobileNetV3 Large")
+        )
+
+        self.convnext_tiny_action.triggered.connect(
+            lambda: self.change_model("ConvNeXt Tiny")
+        )
+
+        self.inceptionv3_action.triggered.connect(
+            lambda: self.change_model("InceptionV3")
+        )
+
+        self.prediction_page.image_view.imageDropped.connect(
             self.load_image
         )
+        
         self.about_action.triggered.connect(
             lambda: show_about(self)
         )
         self.toolbar.retrain_action.triggered.connect(
             self.retrain_model
         )
+        self.toolbar.recompare_action.triggered.connect(
+            self.recompare_models
+        )
+        self.fullscreen_action.triggered.connect(
+            self.toggle_fullscreen
+        )
+        
     def _create_central_widget(self):
 
-        central = QWidget()
+        self.tabs = QTabWidget()
 
-        self.setCentralWidget(central)
+        self.prediction_page = PredictionPage()
 
-        layout = QHBoxLayout(central)
+        self.analytics_page = AnalyticsPage()
 
-        layout.setContentsMargins(15, 15, 15, 15)
+        self.tabs.addTab(
+            self.prediction_page,
+            "Prediction",
+        )
 
-        self.image_view = ImageView()
+        self.tabs.addTab(
+            self.analytics_page,
+            "Analytics",
+        )
 
-        self.prediction_panel = PredictionPanel()
 
-        layout.addWidget(self.image_view, 3)
-
-        layout.addWidget(self.prediction_panel, 1)
+        self.setCentralWidget(self.tabs)
 
     def _create_menu_bar(self):
+
+
 
         menubar = self.menuBar()
 
@@ -126,12 +166,37 @@ class MainWindow(QMainWindow):
 
         self.efficient_action = QAction("EfficientNetB0", self)
 
+        self.densenet_action = QAction("DenseNet121", self)
+
+        self.efficientv_action = QAction("EfficientNetV2B0", self)
+
+        self.xception_action = QAction("Xception", self)
+
+        self.mobilenet_action = QAction("MobileNetV3 Large", self)
+
+        self.convnext_tiny_action = QAction("ConvNeXt Tiny", self)
+
+        self.inceptionv3_action = QAction("InceptionV3", self)
+
         model_menu.addActions([
             self.custom_action,
             self.resnet_action,
             self.efficient_action,
+            self.densenet_action,
+            self.efficientv_action,
+            self.xception_action,
+            self.mobilenet_action,
+            self.convnext_tiny_action,
+            self.inceptionv3_action
         ])
 
+        view_menu = menubar.addMenu("&View")
+
+        self.fullscreen_action = QAction("Toggle Full Screen", self)
+        self.fullscreen_action.setShortcut("F11")
+
+        view_menu.addAction(self.fullscreen_action)
+        
         help_menu = menubar.addMenu("&Help")
 
         self.about_action = QAction("About", self)
@@ -147,6 +212,19 @@ class MainWindow(QMainWindow):
         self.resnet_action.setShortcut("Ctrl+2")
 
         self.efficient_action.setShortcut("Ctrl+3")
+
+        self.densenet_action.setShortcut("Ctrl+4")
+
+        self.efficientv_action.setShortcut("Ctrl+5")
+
+        self.xception_action.setShortcut("Ctrl+6")
+
+        self.mobilenet_action.setShortcut("Ctrl+7")
+
+        self.convnext_tiny_action.setShortcut("Ctrl+8")
+
+        self.inceptionv3_action.setShortcut("Ctrl+9")
+
 
 
     def _create_tool_bar(self):
@@ -164,6 +242,8 @@ class MainWindow(QMainWindow):
         self.status_bar = self.statusBar()
 
         self.status_bar.showMessage("Ready")
+
+        self.log_console.log("Image cleared.")
 
         self.model_status = QLabel()
 
@@ -199,7 +279,7 @@ class MainWindow(QMainWindow):
             return
         self.current_image = filename
 
-        self.image_view.set_image(filename)
+        self.prediction_page.image_view.set_image(filename)
 
         self.status_bar.showMessage(
             f"Loaded: {Path(filename).name}"
@@ -222,7 +302,7 @@ class MainWindow(QMainWindow):
                 self.current_image
             )
 
-            self.prediction_panel.update_result(
+            self.prediction_page.prediction_panel.update_result(
                 result,
                 self.current_model,
             )
@@ -241,13 +321,19 @@ class MainWindow(QMainWindow):
             self.log_console.log(
                 "Prediction failed."
             )
-            self.log_console.log(e)
+            self.log_console.log(str(e))
 
     def change_model(self, name):
 
         self.current_model = name
 
         self.predictor.reload(name)
+        folder_name = MODEL_FILES
+
+        index = self.analytics_page.model_box.findData("custom_cnn")
+        self.analytics_page.model_box.setCurrentIndex(index)
+
+        self.analytics_page.load_results()
 
         self.update_model_status()
 
@@ -263,9 +349,9 @@ class MainWindow(QMainWindow):
 
         self.current_image = None
 
-        self.image_view.clear()
+        self.prediction_page.image_view.clear()
 
-        self.prediction_panel.clear()
+        self.prediction_page.prediction_panel.clear()
 
         self.statusBar().showMessage(
             "Ready"
@@ -298,7 +384,29 @@ class MainWindow(QMainWindow):
 
         self.predictor.reload(model)
 
+        self.change_model(model)
+
         self.status_bar.showMessage(
             "Training completed.",
             5000,
         )
+        ModelComparison().run()
+        ConfusionComparison().run()
+        self.log_console.log(
+            "Training completed"
+        )
+        self.analytics_page.load_results()
+
+    def recompare_models(self):
+        self.log_console.log("Comparison started...")
+        ModelComparison().run()
+        ConfusionComparison().run()
+        self.log_console.log("Comparison completed")
+
+    def toggle_fullscreen(self):
+
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
+    

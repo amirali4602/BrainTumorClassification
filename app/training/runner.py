@@ -40,9 +40,20 @@ class TrainingRunner:
 
         class_names = train_ds.class_names
 
-        train_ds = prepare_train(train_ds)
-        val_ds = prepare_validation(val_ds)
-        test_ds = prepare_test(test_ds)
+        train_ds = prepare_train(
+            train_ds,
+            self.model_name,
+        )
+
+        val_ds = prepare_validation(
+            val_ds,
+            self.model_name,
+        )
+
+        test_ds = prepare_test(
+            test_ds,
+            self.model_name,
+        )
 
         self.model.build(
             (

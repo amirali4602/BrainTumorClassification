@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 
 import tensorflow as tf
 
+from app.config import LEARNING_RATE, WEIGHT_DECAY
+
 
 class BaseModel(ABC):
     """
@@ -19,7 +21,10 @@ class BaseModel(ABC):
     def compile(self):
 
         self.model.compile(
-            optimizer=tf.keras.optimizers.Adam(),
+            optimizer=tf.keras.optimizers.AdamW(
+                learning_rate=LEARNING_RATE,
+                weight_decay=WEIGHT_DECAY,
+            ),
             loss="sparse_categorical_crossentropy",
             metrics=["accuracy"],
         )

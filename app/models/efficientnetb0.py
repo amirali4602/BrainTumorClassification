@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import (
     Dense,
@@ -34,6 +35,7 @@ class EfficientNetB0Model(BaseModel):
         x = Dense(
             256,
             activation="relu",
+            kernel_regularizer=tf.keras.regularizers.l2(1e-4),
         )(x)
 
         x = Dropout(
@@ -44,6 +46,7 @@ class EfficientNetB0Model(BaseModel):
         output = Dense(
             num_classes,
             activation="softmax",
+            kernel_regularizer=tf.keras.regularizers.l2(1e-4),
         )(x)
 
 

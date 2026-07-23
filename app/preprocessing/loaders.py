@@ -44,7 +44,7 @@ class DatasetLoader:
 
         # Save class names for later use
         self.class_names = train_dataset.class_names
-
+        print(train_dataset.class_names)
         return (
             train_dataset,
             validation_dataset,
