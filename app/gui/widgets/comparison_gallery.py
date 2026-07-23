@@ -63,7 +63,7 @@ class ComparisonGallery(QScrollArea):
             row, col = positions[filename]
 
             if filename == "confusion_matrix_comparison.png":
-
+                card.setMinimumHeight(700)
                 self.layout.addWidget(
                     card,
                     row,

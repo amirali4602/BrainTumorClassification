@@ -4,16 +4,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.metrics import ConfusionMatrixDisplay
 
-from app.config import RESULTS_DIR
+from app.config import MODELS_NAME, RESULTS_DIR
 
 
 class ModelComparison:
 
-    MODELS = [
-        "custom_cnn",
-        "resnet50",
-        "efficientnetb0",
-    ]
+    MODELS = MODELS_NAME
 
     def __init__(self):
         self.rows = []

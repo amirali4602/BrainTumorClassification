@@ -6,6 +6,8 @@ from PySide6.QtWidgets import (
     QSpinBox,
 )
 
+from app.config import MODELS
+
 
 class RetrainDialog(QDialog):
 
@@ -18,13 +20,7 @@ class RetrainDialog(QDialog):
 
         self.model_box = QComboBox()
 
-        self.model_box.addItems(
-            [
-                "Custom CNN",
-                "ResNet50",
-                "EfficientNetB0",
-            ]
-        )
+        self.model_box.addItems(MODELS)
 
         self.epochs = QSpinBox()
 

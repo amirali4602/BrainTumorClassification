@@ -8,6 +8,30 @@ from tensorflow.keras.applications.efficientnet import (
     preprocess_input as efficientnet_preprocess,
 )
 
+from tensorflow.keras.applications.densenet import (
+    preprocess_input as densenet_preprocess,
+)
+
+from tensorflow.keras.applications.efficientnet_v2 import (
+    preprocess_input as efficientnetv2_preprocess,
+)
+
+from tensorflow.keras.applications.mobilenet_v3 import (
+    preprocess_input as mobilenetv3_preprocess,
+)
+
+from tensorflow.keras.applications.xception import (
+    preprocess_input as xception_preprocess,
+)
+
+from tensorflow.keras.applications.convnext import (
+    preprocess_input as convnext_preprocess,
+)
+
+from tensorflow.keras.applications.inception_v3 import (
+    preprocess_input as inception_preprocess,
+)
+
 from app.config import SHUFFLE_BUFFER
 from app.preprocessing.augmentations import build_augmentation
 
@@ -32,6 +56,30 @@ def normalize(images, labels, model_name):
 
         images = efficientnet_preprocess(images)
 
+    elif model_name == "DenseNet121":
+
+        images = densenet_preprocess(images)
+
+    elif model_name == "EfficientNetV2B0":
+
+        images = efficientnetv2_preprocess(images)
+
+    elif model_name == "MobileNetV3 Large":
+
+        images = mobilenetv3_preprocess(images)
+
+    elif model_name == "Xception":
+
+        images = xception_preprocess(images)
+
+    elif model_name == "ConvNeXt Tiny":
+
+            images = convnext_preprocess(images)
+
+    elif model_name == "InceptionV3":
+
+        images = inception_preprocess(images)
+        
     else:
 
         images = images / 255.0

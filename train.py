@@ -1,10 +1,6 @@
-from app.config import MODEL_NAME
+from app.config import EPOCHS, MODEL_NAME
 from app.training.runner import TrainingRunner
 from app.models.registry import get_model
-
-
-
-
 
 def main():
 
@@ -13,7 +9,7 @@ def main():
     TrainingRunner(
         model,
         MODEL_NAME,
-        epochs=50
+        epochs=EPOCHS
     ).run()
 
 

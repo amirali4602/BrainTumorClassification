@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QDockWidget
 )
 from PySide6.QtGui import QAction, QIcon, Qt
-from app.config import LOGO_DIR, VALID_EXTENSIONS
+from app.config import LOGO_DIR, MODEL_FILES, VALID_EXTENSIONS
 from app.evaluation.comparison import ModelComparison
 from app.gui.widgets.log_console import LogConsole
 from app.gui.widgets.toolbar import MainToolBar
@@ -77,9 +77,35 @@ class MainWindow(QMainWindow):
         self.efficient_action.triggered.connect(
             lambda: self.change_model("EfficientNetB0")
         )
+
+        self.densenet_action.triggered.connect(
+            lambda: self.change_model("DenseNet121")
+        )
+
+        self.efficientv_action.triggered.connect(
+            lambda: self.change_model("EfficientNetV2B0")
+        )
+
+        self.xception_action.triggered.connect(
+            lambda: self.change_model("Xception")
+        )
+
+        self.mobilenet_action.triggered.connect(
+            lambda: self.change_model("MobileNetV3 Large")
+        )
+
+        self.convnext_tiny_action.triggered.connect(
+            lambda: self.change_model("ConvNeXt Tiny")
+        )
+
+        self.inceptionv3_action.triggered.connect(
+            lambda: self.change_model("InceptionV3")
+        )
+
         self.prediction_page.image_view.imageDropped.connect(
             self.load_image
         )
+        
         self.about_action.triggered.connect(
             lambda: show_about(self)
         )
@@ -89,6 +115,10 @@ class MainWindow(QMainWindow):
         self.toolbar.recompare_action.triggered.connect(
             self.recompare_models
         )
+        self.fullscreen_action.triggered.connect(
+            self.toggle_fullscreen
+        )
+        
     def _create_central_widget(self):
 
         self.tabs = QTabWidget()
@@ -112,6 +142,8 @@ class MainWindow(QMainWindow):
 
     def _create_menu_bar(self):
 
+
+
         menubar = self.menuBar()
 
         file_menu = menubar.addMenu("&File")
@@ -134,12 +166,37 @@ class MainWindow(QMainWindow):
 
         self.efficient_action = QAction("EfficientNetB0", self)
 
+        self.densenet_action = QAction("DenseNet121", self)
+
+        self.efficientv_action = QAction("EfficientNetV2B0", self)
+
+        self.xception_action = QAction("Xception", self)
+
+        self.mobilenet_action = QAction("MobileNetV3 Large", self)
+
+        self.convnext_tiny_action = QAction("ConvNeXt Tiny", self)
+
+        self.inceptionv3_action = QAction("InceptionV3", self)
+
         model_menu.addActions([
             self.custom_action,
             self.resnet_action,
             self.efficient_action,
+            self.densenet_action,
+            self.efficientv_action,
+            self.xception_action,
+            self.mobilenet_action,
+            self.convnext_tiny_action,
+            self.inceptionv3_action
         ])
 
+        view_menu = menubar.addMenu("&View")
+
+        self.fullscreen_action = QAction("Toggle Full Screen", self)
+        self.fullscreen_action.setShortcut("F11")
+
+        view_menu.addAction(self.fullscreen_action)
+        
         help_menu = menubar.addMenu("&Help")
 
         self.about_action = QAction("About", self)
@@ -155,6 +212,19 @@ class MainWindow(QMainWindow):
         self.resnet_action.setShortcut("Ctrl+2")
 
         self.efficient_action.setShortcut("Ctrl+3")
+
+        self.densenet_action.setShortcut("Ctrl+4")
+
+        self.efficientv_action.setShortcut("Ctrl+5")
+
+        self.xception_action.setShortcut("Ctrl+6")
+
+        self.mobilenet_action.setShortcut("Ctrl+7")
+
+        self.convnext_tiny_action.setShortcut("Ctrl+8")
+
+        self.inceptionv3_action.setShortcut("Ctrl+9")
+
 
 
     def _create_tool_bar(self):
@@ -258,11 +328,7 @@ class MainWindow(QMainWindow):
         self.current_model = name
 
         self.predictor.reload(name)
-        folder_name = {
-            "Custom CNN": "custom_cnn",
-            "ResNet50": "resnet50",
-            "EfficientNetB0": "efficientnetb0",
-        }
+        folder_name = MODEL_FILES
 
         index = self.analytics_page.model_box.findData("custom_cnn")
         self.analytics_page.model_box.setCurrentIndex(index)
@@ -336,4 +402,11 @@ class MainWindow(QMainWindow):
         ModelComparison().run()
         ConfusionComparison().run()
         self.log_console.log("Comparison completed")
-   
+
+    def toggle_fullscreen(self):
+
+        if self.isFullScreen():
+            self.showNormal()
+        else:
+            self.showFullScreen()
+    

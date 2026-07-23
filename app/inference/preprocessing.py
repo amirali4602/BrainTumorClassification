@@ -10,6 +10,30 @@ from tensorflow.keras.applications.efficientnet import (
     preprocess_input as efficientnet_preprocess,
 )
 
+from tensorflow.keras.applications.densenet import (
+    preprocess_input as densenet_preprocess,
+)
+
+from tensorflow.keras.applications.efficientnet_v2 import (
+    preprocess_input as efficientnetv2_preprocess,
+)
+
+from tensorflow.keras.applications.mobilenet_v3 import (
+    preprocess_input as mobilenetv3_preprocess,
+)
+
+from tensorflow.keras.applications.xception import (
+    preprocess_input as xception_preprocess,
+)
+
+from tensorflow.keras.applications.convnext import (
+    preprocess_input as convnext_preprocess,
+)
+
+from tensorflow.keras.applications.inception_v3 import (
+    preprocess_input as inception_preprocess,
+)
+
 from app.config import (
     IMAGE_HEIGHT,
     IMAGE_WIDTH,
@@ -42,6 +66,30 @@ def preprocess_image(
     elif model_name == "EfficientNetB0":
 
         img = efficientnet_preprocess(img)
+
+    elif model_name == "DenseNet121":
+
+        img = densenet_preprocess(img)
+
+    elif model_name == "EfficientNetV2B0":
+
+        img = efficientnetv2_preprocess(img)
+
+    elif model_name == "MobileNetV3 Large":
+
+        img = mobilenetv3_preprocess(img)
+
+    elif model_name == "Xception":
+
+        img = xception_preprocess(img)
+
+    elif model_name == "ConvNeXt Tiny":
+
+        images = convnext_preprocess(img)
+        
+    elif model_name == "InceptionV3":
+
+        img = inception_preprocess(img)
 
     else:
 

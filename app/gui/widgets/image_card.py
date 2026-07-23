@@ -29,7 +29,7 @@ class ImageCard(QWidget):
 
         self.image.setMinimumSize(
             300,
-            250,
+            450,
         )
 
         layout.addWidget(self.title)

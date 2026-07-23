@@ -40,6 +40,13 @@ class AnalyticsPage(QWidget):
         self.model_box.addItem("Custom CNN", "custom_cnn")
         self.model_box.addItem("ResNet50", "resnet50")
         self.model_box.addItem("EfficientNetB0", "efficientnetb0")
+        self.model_box.addItem("DenseNet121", "densenet121")
+        self.model_box.addItem("EfficientNetV2B0", "efficientnetv2b0")
+        self.model_box.addItem("MobileNetV3 Large", "mobilenetv3")
+        self.model_box.addItem("Xception", "xception")
+        self.model_box.addItem("ConvNeXt Tiny", "convnext_tiny")
+        self.model_box.addItem("InceptionV3", "inceptionv3")
+
 
         self.refresh_button = QPushButton("Refresh")
 

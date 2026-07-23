@@ -24,6 +24,12 @@ Supported Models:
 <li>Custom CNN</li>
 <li>ResNet50</li>
 <li>EfficientNetB0</li>
+<li>DenseNet121</li>
+<li>EfficientNetV2B0</li>
+<li>MobileNetV3 Large</li>
+<li>Xception</li>
+<li>ConvNeXt Tiny</li>
+<li>InceptionV3</li>
 </ul>
 
 <p>

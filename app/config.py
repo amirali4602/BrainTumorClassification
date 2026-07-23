@@ -21,6 +21,42 @@ LOGS_DIR = ROOT_DIR / "logs"
 
 LOGO_DIR = "app/gui/resources/images/Logo.jpg"
 
+MODEL_FILES = {
+    "Custom CNN": "custom_cnn.keras",
+    "ResNet50": "resnet50.keras",
+    "EfficientNetB0": "efficientnetb0.keras",
+    "DenseNet121": "densenet121.keras",
+    "EfficientNetV2B0": "efficientnetv2b0.keras",
+    "MobileNetV3 Large": "mobilenetv3.keras",
+    "Xception": "xception.keras",
+    "ConvNeXt Tiny" : "convnext_tiny.keras",
+    "InceptionV3" : "inceptionv3.keras"
+}
+
+MODELS_NAME = [
+    "custom_cnn",
+    "resnet50",
+    "efficientnetb0",
+    "densenet121",
+    "efficientnetv2b0",
+    "mobilenetv3",
+    "xception",
+    "convnext_tiny",
+    "inceptionv3"
+]
+
+MODELS = [
+    "Custom CNN",
+    "ResNet50",
+    "EfficientNetB0",
+    "DenseNet121",
+    "EfficientNetV2B0",
+    "MobileNetV3 Large",
+    "Xception",
+    "ConvNeXt Tiny",
+    "InceptionV3"
+]
+
 CLASS_NAMES = [
     "glioma",
     "meningioma",
@@ -35,7 +71,7 @@ VALID_EXTENSIONS = {
     ".bmp",
 }
 
-MODEL_NAME = "resnet50"
+MODEL_NAME = "convnext_tiny"
 
 NUM_CLASSES = len(CLASS_NAMES)
 
@@ -43,8 +79,8 @@ NUM_CLASSES = len(CLASS_NAMES)
 # Image
 # ===============================
 
-IMAGE_HEIGHT = 300
-IMAGE_WIDTH = 300
+IMAGE_HEIGHT = 299
+IMAGE_WIDTH = 299
 IMAGE_SIZE = (IMAGE_HEIGHT, IMAGE_WIDTH)
 
 CHANNELS = 3
@@ -68,6 +104,8 @@ AUTOTUNE = tf.data.AUTOTUNE
 EPOCHS = 50
 
 LEARNING_RATE = 1e-5
+
+WEIGHT_DECAY = 1e-4
 
 RANDOM_SEED = 42
 
